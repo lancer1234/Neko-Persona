@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neko Persona - 現場客群數據紀錄系統</title>
+    <!-- 引入 Tailwind CSS 設計 -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
@@ -11,10 +12,11 @@
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen pb-12">
 
+    <!-- 頂部導覽列 -->
     <header class="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-50 px-4 py-3">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <h1 class="text-xl font-bold tracking-wider text-zinc-100">Neko Persona <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded ml-2">DATA COUNTER</span></h1>
-            <span class="text-xs text-zinc-500 font-mono hidden sm:inline">v1.0 · By 行銷部 Danny</span>
+            <span class="text-xs text-zinc-500 font-mono hidden sm:inline">v1.1 · By 行銷部 Danny</span>
         </div>
     </header>
 
@@ -22,6 +24,7 @@
         
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
             
+            <!-- 快捷輸入面板 (手機直向優化) -->
             <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl xl:col-span-1 space-y-4">
                 <div>
                     <h2 class="text-lg font-semibold text-amber-400 mb-1">顧客特徵快捷紀錄</h2>
@@ -29,6 +32,7 @@
                 </div>
                 
                 <form id="pos-form" onsubmit="saveRecord(event)" class="space-y-4">
+                    <!-- 選擇門店 -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">消費門店</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -37,6 +41,7 @@
                         </div>
                     </div>
 
+                    <!-- 年齡範圍 -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">年齡估計範圍</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -47,6 +52,7 @@
                         </div>
                     </div>
 
+                    <!-- 性別 -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">性別</label>
                         <div class="grid grid-cols-3 gap-2">
@@ -56,6 +62,7 @@
                         </div>
                     </div>
 
+                    <!-- 消費金額區間 -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">消費金額區間</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -67,6 +74,7 @@
                         </div>
                     </div>
 
+                    <!-- 小費與賞酒 -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">有無小費</label>
@@ -78,12 +86,13 @@
                         <div>
                             <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">有無賞酒</label>
                             <div class="grid grid-cols-2 gap-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800">
-                                <button type="button" onclick="selectPosOpt('drink', '有')" class="pos-drink-btn py-1.5 text-xs rounded transition-all text-zinc-400 font-medium">有</button>
+                                <button type="button" onclick="selectPosOpt('drink', '開')" class="pos-drink-btn py-1.5 text-xs rounded transition-all text-zinc-400 font-medium">有</button>
                                 <button type="button" onclick="selectPosOpt('drink', '無')" class="pos-drink-btn py-1.5 text-xs rounded transition-all text-zinc-400 font-medium">無</button>
                             </div>
                         </div>
                     </div>
 
+                    <!-- 滿意度 -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1">顧客滿意度</label>
                         <div class="flex items-center gap-2 bg-zinc-950 p-2 rounded-lg border border-zinc-800 justify-center">
@@ -95,6 +104,7 @@
                         </div>
                     </div>
 
+                    <!-- 備註輸入 -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1">現場觀察備註（選填）</label>
                         <input type="text" id="pos-note" placeholder="例如：點牛肉麵、心情看似沉重、聊車..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-amber-500">
@@ -106,6 +116,7 @@
                 </form>
             </div>
 
+            <!-- 本地歷史紀錄數據庫 -->
             <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl xl:col-span-2 flex flex-col justify-between">
                 <div>
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
@@ -132,7 +143,8 @@
                                 </tr>
                             </thead>
                             <tbody id="record-table-body" class="divide-y divide-zinc-800/60 text-zinc-300">
-                                </tbody>
+                                <!-- 動態插入紀錄 -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -147,7 +159,6 @@
     </main>
 
     <script>
-        // 現場結帳紀錄器變數
         let currentSelectedStore = '';
         let currentSelectedAge = '';
         let currentSelectedGender = '';
@@ -164,7 +175,6 @@
             }
         };
 
-        // 星星評分點擊處理
         function setRating(rating) {
             currentSelectedRating = rating;
             const stars = document.querySelectorAll('.star-rating');
@@ -177,7 +187,6 @@
             });
         }
 
-        // 快捷鍵選項選取視覺切換
         function selectPosOpt(type, value) {
             if (type === 'store') { currentSelectedStore = value; updateButtonStyles('.pos-store-btn', value); }
             else if (type === 'age') { currentSelectedAge = value; updateButtonStyles('.pos-age-btn', value); }
@@ -209,7 +218,7 @@
         function updateToggleStyles(className, value) {
             const buttons = document.querySelectorAll(className);
             buttons.forEach(btn => {
-                if (btn.innerText === value) {
+                if (btn.innerText === value || (value === '開' && btn.innerText === '有')) {
                     btn.className = `${className.replace('.','')} py-1.5 text-xs rounded transition-all bg-zinc-800 text-amber-400 font-bold`;
                 } else {
                     btn.className = `${className.replace('.','')} py-1.5 text-xs rounded transition-all text-zinc-500 font-medium`;
@@ -217,7 +226,6 @@
             });
         }
 
-        // 儲存現場紀錄
         function saveRecord(e) {
             e.preventDefault();
             if (!currentSelectedStore || !currentSelectedAge || !currentSelectedGender || !currentSelectedAmount || !currentSelectedTips || !currentSelectedDrink || currentSelectedRating === 0) {
@@ -236,6 +244,7 @@
             const fullTimeStr = `${dateString} ${timeString} (${currentDayOfWeek})`;
 
             let ageDisplay = currentSelectedAge === '41+' ? '41+' : currentSelectedAge;
+            let drinkDisplay = currentSelectedDrink === '開' ? '有' : currentSelectedDrink;
 
             const newRecord = {
                 id: Date.now(),
@@ -246,15 +255,14 @@
                 gender: currentSelectedGender,
                 amount: currentSelectedAmount,
                 tips: currentSelectedTips,
-                drink: currentSelectedDrink,
-                rating: currentSelectedRating, // 這裡存的本來就是數字（1~5）
+                drink: drinkDisplay,
+                rating: currentSelectedRating, 
                 note: noteInput.value.trim() || '無備註'
             };
 
             localRecords.unshift(newRecord);
             localStorage.setItem('talking_bar_records', JSON.stringify(localRecords));
             
-            // 重置狀態
             noteInput.value = '';
             currentSelectedStore = ''; currentSelectedAge = ''; currentSelectedGender = ''; currentSelectedAmount = '';
             currentSelectedTips = ''; currentSelectedDrink = ''; currentSelectedRating = 0;
@@ -276,7 +284,6 @@
             renderTable();
         }
 
-        // 渲染資料表格
         function renderTable() {
             const tbody = document.getElementById('record-table-body');
             const countSpan = document.getElementById('record-count');
@@ -297,9 +304,8 @@
                     : '<span class="bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 rounded font-bold">1884</span>';
 
                 const tipsTag = rec.tips === '有' ? '<span class="text-emerald-400 font-semibold">有小費</span>' : '<span class="text-zinc-600">無小費</span>';
-                const drinkTag = rec.drink === '有' ? '<span class="text-purple-400 font-semibold">有賞酒</span>' : '<span class="text-zinc-600">無賞酒</span>';
+                const drinkTag = rec.drink === '有' || rec.drink === '開' ? '<span class="text-purple-400 font-semibold">有賞酒</span>' : '<span class="text-zinc-600">無賞酒</span>';
 
-                // 網頁前端依然顯示星星，直觀好看
                 const starString = '<span class="text-amber-400 font-mono">' + '★'.repeat(rec.rating) + '</span>' + '<span class="text-zinc-800 font-mono">' + '★'.repeat(5 - rec.rating) + '</span>';
 
                 tr.innerHTML = `
@@ -336,16 +342,13 @@
             }
         }
 
-        // 匯出 CSV (滿意度優化為「純數字」格式)
         function exportCSV() {
             if (localRecords.length === 0) { alert('目前沒有資料可以匯出！'); return; }
             
-            // 修改表頭標示為 滿意度分數(1-5)
             let csvContent = "\uFEFF時間,星期,門店,預估年齡,性別,消費金額區間,是否有小費,是否有賞酒,滿意度分數(1-5),現場備註\n";
             
             localRecords.forEach(r => {
                 let safeNote = r.note.replace(/"/g, '""');
-                // 直接將數字 r.rating 放入 CSV，方便 Excel 進行 =AVERAGE() 平均值計算
                 csvContent += `"${r.time}",${r.weekday},${r.store},"${r.age} 歲",${r.gender},"${r.amount}",${r.tips},${r.drink},${r.rating},"${safeNote}"\n`;
             });
 
@@ -356,7 +359,7 @@
             const dateStr = now.toISOString().slice(0,10);
             
             link.setAttribute("href", url);
-            link.setAttribute("download", `TalkingBar_高階數據明細_${dateStr}.csv`);
+            link.setAttribute("download", `Neko Persona_客群數據明細_${dateStr}.csv`);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
