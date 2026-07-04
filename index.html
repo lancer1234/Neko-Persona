@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neko Persona - 現場客群數據紀錄系統</title>
-    <!-- 引入 Tailwind CSS 用於精美且響應式的 Brutalist 工業風設計 -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
@@ -12,20 +11,17 @@
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen pb-12">
 
-    <!-- 頂部導覽列 -->
     <header class="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-50 px-4 py-3">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <h1 class="text-xl font-bold tracking-wider text-zinc-100">Neko Persona <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded ml-2">DATA COUNTER</span></h1>
-            <span class="text-xs text-zinc-500 font-mono hidden sm:inline">v2.1 · Pure Counter Mode</span>
+            <span class="text-xs text-zinc-500 font-mono hidden sm:inline">v3.1 · By Danny</span>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-4 mt-6">
         
-        <!-- ==================== 現場結帳紀錄主區塊 ==================== -->
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
             
-            <!-- 快捷輸入面板 (手機直向優化) -->
             <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl xl:col-span-1 space-y-4">
                 <div>
                     <h2 class="text-lg font-semibold text-amber-400 mb-1">顧客特徵快捷紀錄</h2>
@@ -33,7 +29,6 @@
                 </div>
                 
                 <form id="pos-form" onsubmit="saveRecord(event)" class="space-y-4">
-                    <!-- 選擇門店 -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">消費門店</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -42,7 +37,6 @@
                         </div>
                     </div>
 
-                    <!-- 年齡範圍 -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">年齡估計範圍</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -53,7 +47,6 @@
                         </div>
                     </div>
 
-                    <!-- 性別 -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">性別</label>
                         <div class="grid grid-cols-3 gap-2">
@@ -63,7 +56,6 @@
                         </div>
                     </div>
 
-                    <!-- 消費金額區間 -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">消費金額區間</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -75,7 +67,34 @@
                         </div>
                     </div>
 
-                    <!-- 備註輸入 -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">有無小費</label>
+                            <div class="grid grid-cols-2 gap-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800">
+                                <button type="button" onclick="selectPosOpt('tips', '有')" class="pos-tips-btn py-1.5 text-xs rounded transition-all text-zinc-400 font-medium">有</button>
+                                <button type="button" onclick="selectPosOpt('tips', '無')" class="pos-tips-btn py-1.5 text-xs rounded transition-all text-zinc-400 font-medium">無</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">有無賞酒</label>
+                            <div class="grid grid-cols-2 gap-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800">
+                                <button type="button" onclick="selectPosOpt('drink', '有')" class="pos-drink-btn py-1.5 text-xs rounded transition-all text-zinc-400 font-medium">有</button>
+                                <button type="button" onclick="selectPosOpt('drink', '無')" class="pos-drink-btn py-1.5 text-xs rounded transition-all text-zinc-400 font-medium">無</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1">顧客滿意度</label>
+                        <div class="flex items-center gap-2 bg-zinc-950 p-2 rounded-lg border border-zinc-800 justify-center">
+                            <span onclick="setRating(1)" class="star-rating text-2xl text-zinc-700 cursor-pointer hover:scale-110 transition-transform">★</span>
+                            <span onclick="setRating(2)" class="star-rating text-2xl text-zinc-700 cursor-pointer hover:scale-110 transition-transform">★</span>
+                            <span onclick="setRating(3)" class="star-rating text-2xl text-zinc-700 cursor-pointer hover:scale-110 transition-transform">★</span>
+                            <span onclick="setRating(4)" class="star-rating text-2xl text-zinc-700 cursor-pointer hover:scale-110 transition-transform">★</span>
+                            <span onclick="setRating(5)" class="star-rating text-2xl text-zinc-700 cursor-pointer hover:scale-110 transition-transform">★</span>
+                        </div>
+                    </div>
+
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1">現場觀察備註（選填）</label>
                         <input type="text" id="pos-note" placeholder="例如：點牛肉麵、心情看似沉重、聊車..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-amber-500">
@@ -87,7 +106,6 @@
                 </form>
             </div>
 
-            <!-- 本地歷史紀錄數據庫 (跨 2 欄) -->
             <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl xl:col-span-2 flex flex-col justify-between">
                 <div>
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
@@ -100,23 +118,21 @@
                         </button>
                     </div>
 
-                    <!-- 歷史表格明細 -->
-                    <div class="overflow-x-auto border border-zinc-800 rounded-lg max-h-[550px] overflow-y-auto">
+                    <div class="overflow-x-auto border border-zinc-800 rounded-lg max-h-[600px] overflow-y-auto">
                         <table class="w-full text-left border-collapse text-xs sm:text-sm">
                             <thead class="bg-zinc-950 text-zinc-400 border-b border-zinc-800 font-mono uppercase tracking-wider text-[11px] sticky top-0">
                                 <tr>
                                     <th class="p-3">時間 (星期)</th>
                                     <th class="p-3">門店</th>
-                                    <th class="p-3">估計年齡</th>
-                                    <th class="p-3">性別</th>
-                                    <th class="p-3">消費金額</th>
+                                    <th class="p-3">基本資料</th>
+                                    <th class="p-3">消費 & 互動</th>
+                                    <th class="p-3">滿意度</th>
                                     <th class="p-3">現場備註</th>
                                     <th class="p-3 text-center">操作</th>
                                 </tr>
                             </thead>
                             <tbody id="record-table-body" class="divide-y divide-zinc-800/60 text-zinc-300">
-                                <!-- 動態插入紀錄 -->
-                            </tbody>
+                                </tbody>
                         </table>
                     </div>
                 </div>
@@ -136,6 +152,9 @@
         let currentSelectedAge = '';
         let currentSelectedGender = '';
         let currentSelectedAmount = '';
+        let currentSelectedTips = '';
+        let currentSelectedDrink = '';
+        let currentSelectedRating = 0; 
         let localRecords = [];
 
         window.onload = function() {
@@ -145,27 +164,37 @@
             }
         };
 
+        // 星星評分點擊處理
+        function setRating(rating) {
+            currentSelectedRating = rating;
+            const stars = document.querySelectorAll('.star-rating');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.className = "star-rating text-2xl text-amber-400 cursor-pointer hover:scale-110 transition-transform drop-shadow-[0_0_6px_rgba(251,191,36,0.4)]";
+                } else {
+                    star.className = "star-rating text-2xl text-zinc-700 cursor-pointer hover:scale-110 transition-transform";
+                }
+            });
+        }
+
         // 快捷鍵選項選取視覺切換
         function selectPosOpt(type, value) {
-            if (type === 'store') {
-                currentSelectedStore = value;
-                updateButtonStyles('.pos-store-btn', value);
-            } else if (type === 'age') {
-                currentSelectedAge = value;
-                updateButtonStyles('.pos-age-btn', value);
-            } else if (type === 'gender') {
-                currentSelectedGender = value;
-                updateButtonStyles('.pos-gender-btn', value);
-            } else if (type === 'amount') {
-                currentSelectedAmount = value;
-                updateButtonStyles('.pos-amount-btn', value);
-            }
+            if (type === 'store') { currentSelectedStore = value; updateButtonStyles('.pos-store-btn', value); }
+            else if (type === 'age') { currentSelectedAge = value; updateButtonStyles('.pos-age-btn', value); }
+            else if (type === 'gender') { currentSelectedGender = value; updateButtonStyles('.pos-gender-btn', value); }
+            else if (type === 'amount') { currentSelectedAmount = value; updateButtonStyles('.pos-amount-btn', value); }
+            else if (type === 'tips') { currentSelectedTips = value; updateToggleStyles('.pos-tips-btn', value); }
+            else if (type === 'drink') { currentSelectedDrink = value; updateToggleStyles('.pos-drink-btn', value); }
         }
 
         function updateButtonStyles(className, value) {
             const buttons = document.querySelectorAll(className);
             buttons.forEach(btn => {
-                if (btn.innerText.includes(value)) {
+                let match = false;
+                if (value === '41+' && (btn.innerText.includes('41') || btn.innerText.includes('41+'))) { match = true; }
+                else if (btn.innerText.includes(value)) { match = true; }
+
+                if (match) {
                     btn.className = `${className.replace('.','')} bg-amber-500 text-zinc-950 border border-amber-500 py-2.5 rounded-lg text-sm font-bold`;
                     if(className === '.pos-gender-btn') btn.className = btn.className.replace('py-2.5', 'py-2');
                     if(className === '.pos-amount-btn') btn.className = btn.className.replace('text-sm', 'text-xs') + (value === '20K 以上' ? ' col-span-2' : '');
@@ -177,50 +206,71 @@
             });
         }
 
+        function updateToggleStyles(className, value) {
+            const buttons = document.querySelectorAll(className);
+            buttons.forEach(btn => {
+                if (btn.innerText === value) {
+                    btn.className = `${className.replace('.','')} py-1.5 text-xs rounded transition-all bg-zinc-800 text-amber-400 font-bold`;
+                } else {
+                    btn.className = `${className.replace('.','')} py-1.5 text-xs rounded transition-all text-zinc-500 font-medium`;
+                }
+            });
+        }
+
         // 儲存現場紀錄
         function saveRecord(e) {
             e.preventDefault();
-            if (!currentSelectedStore || !currentSelectedAge || !currentSelectedGender || !currentSelectedAmount) {
-                alert('請完整勾選：門店、年齡、性別、以及消費金額！');
+            if (!currentSelectedStore || !currentSelectedAge || !currentSelectedGender || !currentSelectedAmount || !currentSelectedTips || !currentSelectedDrink || currentSelectedRating === 0) {
+                alert('請完整勾選所有欄位（含小費、賞酒與滿意度星星）！');
                 return;
             }
 
             const noteInput = document.getElementById('pos-note');
             const now = new Date();
             
-            // 自動計算星期幾
             const weekDays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
             const currentDayOfWeek = weekDays[now.getDay()];
 
             const timeString = now.toLocaleTimeString('zh-TW', { hour12: false, hour: '2-digit', minute: '2-digit' });
             const dateString = now.toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit' });
-            
-            // 組合時間顯示字串
             const fullTimeStr = `${dateString} ${timeString} (${currentDayOfWeek})`;
+
+            let ageDisplay = currentSelectedAge === '41+' ? '41+' : currentSelectedAge;
 
             const newRecord = {
                 id: Date.now(),
                 time: fullTimeStr,
                 weekday: currentDayOfWeek,
                 store: currentSelectedStore,
-                age: currentSelectedAge,
+                age: ageDisplay,
                 gender: currentSelectedGender,
                 amount: currentSelectedAmount,
+                tips: currentSelectedTips,
+                drink: currentSelectedDrink,
+                rating: currentSelectedRating, // 這裡存的本來就是數字（1~5）
                 note: noteInput.value.trim() || '無備註'
             };
 
             localRecords.unshift(newRecord);
             localStorage.setItem('talking_bar_records', JSON.stringify(localRecords));
             
-            // 表單與按鈕重置
+            // 重置狀態
             noteInput.value = '';
             currentSelectedStore = ''; currentSelectedAge = ''; currentSelectedGender = ''; currentSelectedAmount = '';
+            currentSelectedTips = ''; currentSelectedDrink = ''; currentSelectedRating = 0;
             
             document.querySelectorAll('.pos-store-btn, .pos-age-btn, .pos-gender-btn, .pos-amount-btn').forEach(btn => {
                 let baseClass = btn.classList.contains('pos-amount-btn') ? 'text-xs' : 'text-sm';
                 let colSpan = btn.innerText === '20K 以上' ? ' col-span-2' : '';
                 let py = btn.classList.contains('pos-gender-btn') ? 'py-2' : 'py-2.5';
                 btn.className = `${btn.classList[0]} bg-zinc-950 border border-zinc-800 hover:border-zinc-700 ${py} rounded-lg ${baseClass} text-zinc-300 font-medium${colSpan}`;
+            });
+
+            document.querySelectorAll('.pos-tips-btn, .pos-drink-btn').forEach(btn => {
+                btn.className = `${btn.classList[0]} py-1.5 text-xs rounded transition-all text-zinc-400 font-medium`;
+            });
+            document.querySelectorAll('.star-rating').forEach(star => {
+                star.className = "star-rating text-2xl text-zinc-700 cursor-pointer hover:scale-110 transition-transform";
             });
 
             renderTable();
@@ -240,20 +290,30 @@
 
             localRecords.forEach((rec) => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-zinc-900/40 transition-colors";
+                tr.className = "hover:bg-zinc-900/40 transition-colors text-xs";
                 
-                // 依門店給不同標籤底色
                 const storeBadge = rec.store === 'Club One' 
                     ? '<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded font-bold">Club One</span>'
                     : '<span class="bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 rounded font-bold">1884</span>';
 
+                const tipsTag = rec.tips === '有' ? '<span class="text-emerald-400 font-semibold">有小費</span>' : '<span class="text-zinc-600">無小費</span>';
+                const drinkTag = rec.drink === '有' ? '<span class="text-purple-400 font-semibold">有賞酒</span>' : '<span class="text-zinc-600">無賞酒</span>';
+
+                // 網頁前端依然顯示星星，直觀好看
+                const starString = '<span class="text-amber-400 font-mono">' + '★'.repeat(rec.rating) + '</span>' + '<span class="text-zinc-800 font-mono">' + '★'.repeat(5 - rec.rating) + '</span>';
+
                 tr.innerHTML = `
-                    <td class="p-3 font-mono text-zinc-400">${rec.time}</td>
+                    <td class="p-3 font-mono text-zinc-400 whitespace-nowrap">${rec.time}</td>
                     <td class="p-3">${storeBadge}</td>
-                    <td class="p-3"><span class="bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${rec.age} 歲</span></td>
-                    <td class="p-3 text-zinc-200">${rec.gender}</td>
-                    <td class="p-3 font-mono text-amber-400 font-semibold">${rec.amount}</td>
-                    <td class="p-3 text-zinc-400 truncate max-w-[150px] sm:max-w-none" title="${rec.note}">${rec.note}</td>
+                    <td class="p-3 space-y-0.5">
+                        <div class="text-zinc-300 font-medium">${rec.gender}生 · ${rec.age}歲</div>
+                    </td>
+                    <td class="p-3 space-y-1">
+                        <div class="font-mono text-amber-400 font-bold">${rec.amount}</div>
+                        <div class="text-[11px] flex gap-2">${tipsTag} | ${drinkTag}</div>
+                    </td>
+                    <td class="p-3 whitespace-nowrap">${starString}</td>
+                    <td class="p-3 text-zinc-400 max-w-[140px] truncate sm:max-w-none" title="${rec.note}">${rec.note}</td>
                     <td class="p-3 text-center"><button onclick="deleteRecord(${rec.id})" class="text-zinc-600 hover:text-red-400 transition-colors px-2 py-1">✕</button></td>
                 `;
                 tbody.appendChild(tr);
@@ -276,30 +336,27 @@
             }
         }
 
-        // 匯出 CSV (處理 Excel 格式與逗號安全)
+        // 匯出 CSV (滿意度優化為「純數字」格式)
         function exportCSV() {
-            if (localRecords.length === 0) {
-                alert('目前沒有資料可以匯出！');
-                return;
-            }
+            if (localRecords.length === 0) { alert('目前沒有資料可以匯出！'); return; }
             
-            // 加上 BOM (\uFEFF) 防止 Excel 打開中文變亂碼
-            let csvContent = "\uFEFF時間,星期,門店,預估年齡範圍,性別,消費金額區間,現場備註\n";
+            // 修改表頭標示為 滿意度分數(1-5)
+            let csvContent = "\uFEFF時間,星期,門店,預估年齡,性別,消費金額區間,是否有小費,是否有賞酒,滿意度分數(1-5),現場備註\n";
             
             localRecords.forEach(r => {
                 let safeNote = r.note.replace(/"/g, '""');
-                csvContent += `"${r.time}",${r.weekday},${r.store},"${r.age} 歲",${r.gender},"${r.amount}","${safeNote}"\n`;
+                // 直接將數字 r.rating 放入 CSV，方便 Excel 進行 =AVERAGE() 平均值計算
+                csvContent += `"${r.time}",${r.weekday},${r.store},"${r.age} 歲",${r.gender},"${r.amount}",${r.tips},${r.drink},${r.rating},"${safeNote}"\n`;
             });
 
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
-            
             const now = new Date();
             const dateStr = now.toISOString().slice(0,10);
             
             link.setAttribute("href", url);
-            link.setAttribute("download", `TalkingBar_客資明細_${dateStr}.csv`);
+            link.setAttribute("download", `TalkingBar_高階數據明細_${dateStr}.csv`);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
