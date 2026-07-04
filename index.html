@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neko Persona-  Persona 模擬與現場客群紀錄系統</title>
+    <!-- 引入 Tailwind CSS 用於精美且響應式的 Brutalist 工業風設計 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen pb-12">
+
+    <!-- 頂部導覽列 -->
+    <header class="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
+            <h1 class="text-xl font-bold tracking-wider text-zinc-100">TALKING BAR <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded ml-2">INTELLIGENCE</span></h1>
+            
+            <!-- 分頁切換按鈕 -->
+            <div class="flex bg-zinc-950 p-1 rounded-lg border border-zinc-800 w-full sm:w-auto">
+                <button id="tab-btn-sim" onclick="switchTab('sim')" class="flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-md transition-all bg-amber-500 text-zinc-950">
+                    📊 策略模擬器
+                </button>
+                <button id="tab-btn-pos" onclick="switchTab('pos')" class="flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-md transition-all text-zinc-400 hover:text-zinc-200">
+                    📱 現場結帳紀錄
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 mt-6">
+        
+        <!-- ==================== 分頁一：PERSONA 模擬器 ==================== -->
+        <section id="tab-content-sim" class="block space-y-6">
+            <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl">
+                <h2 class="text-lg font-semibold text-amber-400 mb-1">受眾特質即時模擬</h2>
+                <p class="text-xs text-zinc-400 mb-4">調整下方指標，右側將即時推演對應的非典型 Persona 畫像與廣告投放策略。</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- 控制面板 -->
+                    <div class="space-y-5 bg-zinc-950 p-4 rounded-lg border border-zinc-800/80">
+                        <!-- 年齡層 -->
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-2">1. 預期主要年齡層</label>
+                            <select id="sim-age" onchange="updatePersona()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-amber-500">
+                                <option value="young">22 - 27 歲 (社會新鮮人/小眾文化愛好者)</option>
+                                <option value="mid" selected>28 - 42 歲 (高階主管/獨立高收入自由業)</option>
+                                <option value="elder">43 歲以上 (隱密商務/資深品味藏家)</option>
+                            </select>
+                        </div>
+
+                        <!-- 核心動機 -->
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-2">2. 核心消費動機</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-3 bg-zinc-900 p-2.5 rounded-lg border border-zinc-800 cursor-pointer hover:border-zinc-700">
+                                    <input type="radio" name="sim-drive" value="emotion" checked onchange="updatePersona()" class="accent-amber-500">
+                                    <span class="text-sm text-zinc-300">極致情緒價值 (高情商傾聽與卸壓)</span>
+                                </label>
+                                <label class="flex items-center gap-3 bg-zinc-900 p-2.5 rounded-lg border border-zinc-800 cursor-pointer hover:border-zinc-700">
+                                    <input type="radio" name="sim-drive" value="privacy" onchange="updatePersona()" class="accent-amber-500">
+                                    <span class="text-sm text-zinc-300">絕對隱私與美食 (低調避難所)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 數位依賴度 -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-xs font-semibold text-zinc-400 tracking-wider uppercase">3. 數位網路依賴度</label>
+                                <span id="sim-savviness-val" class="text-xs font-bold text-amber-400">Level 4</span>
+                            </div>
+                            <input type="range" id="sim-savviness" min="1" max="5" value="4" oninput="updateSavvinessVal(this.value); updatePersona();" class="w-full accent-amber-500 bg-zinc-800 h-1.5 rounded-lg appearance-none cursor-pointer">
+                            <div class="flex justify-between text-[10px] text-zinc-500 mt-1">
+                                <span>傳統/回頭客口碑</span>
+                                <span>重度社群/SEO導向</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 推演結果輸出 (跨 2 欄) -->
+                    <div class="md:col-span-2 space-y-4">
+                        <div class="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 p-5 rounded-lg relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-amber-500/10 text-amber-400 border-l border-b border-amber-500/20 px-3 py-1 text-[10px] uppercase tracking-widest font-mono">AI Predicted Profile</div>
+                            <span class="text-xs font-bold text-amber-500 tracking-widest uppercase font-mono" id="p-tag">The Asymmetric Networker</span>
+                            <h3 class="text-xl font-bold text-zinc-100 mt-1 mb-3" id="p-name">高壓產業的「不對稱社交」高階主管</h3>
+                            
+                            <div class="space-y-3 text-sm">
+                                <div class="bg-zinc-950/50 p-3 rounded border border-zinc-800/40">
+                                    <strong class="text-zinc-400 block text-xs mb-1">🎯 預測依據（為什麼他們需要？）</strong>
+                                    <p class="text-zinc-300 leading-relaxed text-xs sm:text-sm" id="p-reason">Loading...</p>
+                                </div>
+                                <div class="bg-zinc-950/50 p-3 rounded border border-zinc-800/40">
+                                    <strong class="text-zinc-400 block text-xs mb-1">🔍 網路行為與長尾關鍵字</strong>
+                                    <p class="text-amber-400 font-mono text-xs sm:text-sm" id="p-keywords">Loading...</p>
+                                </div>
+                                <div class="bg-zinc-950/50 p-3 rounded border border-zinc-800/40">
+                                    <strong class="text-zinc-400 block text-xs mb-1">🎬 Meta (FB/IG) 一秒吸睛廣告素材方向</strong>
+                                    <p class="text-zinc-300 text-xs sm:text-sm italic" id="p-ad">Loading...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 分頁二：現場結帳紀錄 ==================== -->
+        <section id="tab-content-pos" class="hidden space-y-6">
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                
+                <!-- 快捷輸入面板 (手機直向優化) -->
+                <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl xl:col-span-1 space-y-4">
+                    <div>
+                        <h2 class="text-lg font-semibold text-amber-400 mb-1">顧客特徵快捷紀錄</h2>
+                        <p class="text-xs text-zinc-400">結帳時工作人員快速點選，時間與星期會自動代入。</p>
+                    </div>
+                    
+                    <form id="pos-form" onsubmit="saveRecord(event)" class="space-y-4">
+                        <!-- 選擇門店 -->
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">消費門店</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="selectPosOpt('store', 'Club One')" class="pos-store-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2.5 rounded-lg text-sm text-zinc-300 font-medium">Club One (女模)</button>
+                                <button type="button" onclick="selectPosOpt('store', '1884')" class="pos-store-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2.5 rounded-lg text-sm text-zinc-300 font-medium">1884 (男模)</button>
+                            </div>
+                        </div>
+
+                        <!-- 年齡範圍 -->
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">年齡估計範圍</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="selectPosOpt('age', '20-25')" class="pos-age-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2.5 rounded-lg text-sm text-zinc-300 font-medium">20-25 歲</button>
+                                <button type="button" onclick="selectPosOpt('age', '26-30')" class="pos-age-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2.5 rounded-lg text-sm text-zinc-300 font-medium">26-30 歲</button>
+                                <button type="button" onclick="selectPosOpt('age', '31-40')" class="pos-age-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2.5 rounded-lg text-sm text-zinc-300 font-medium">31-40 歲</button>
+                                <button type="button" onclick="selectPosOpt('age', '41+')" class="pos-age-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2.5 rounded-lg text-sm text-zinc-300 font-medium">41 歲以上</button>
+                            </div>
+                        </div>
+
+                        <!-- 性別 -->
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">性別</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button type="button" onclick="selectPosOpt('gender', '男')" class="pos-gender-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2 rounded-lg text-sm text-zinc-300 font-medium">男</button>
+                                <button type="button" onclick="selectPosOpt('gender', '女')" class="pos-gender-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2 rounded-lg text-sm text-zinc-300 font-medium">女</button>
+                                <button type="button" onclick="selectPosOpt('gender', '其他')" class="pos-gender-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2 rounded-lg text-sm text-zinc-300 font-medium">其他</button>
+                            </div>
+                        </div>
+
+                        <!-- 消費金額區間 -->
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1.5">消費金額區間</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="selectPosOpt('amount', '2K 以下')" class="pos-amount-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2.5 rounded-lg text-xs text-zinc-300 font-medium">2K 以下</button>
+                                <button type="button" onclick="selectPosOpt('amount', '2K - 5K')" class="pos-amount-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2.5 rounded-lg text-xs text-zinc-300 font-medium">2K - 5K</button>
+                                <button type="button" onclick="selectPosOpt('amount', '5K - 10K')" class="pos-amount-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2.5 rounded-lg text-xs text-zinc-300 font-medium">5K - 10K</button>
+                                <button type="button" onclick="selectPosOpt('amount', '10K - 20K')" class="pos-amount-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2.5 rounded-lg text-xs text-zinc-300 font-medium">10K - 20K</button>
+                                <button type="button" onclick="selectPosOpt('amount', '20K 以上')" class="pos-amount-btn bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2.5 rounded-lg text-xs text-zinc-300 font-medium col-span-2">20K 以上</button>
+                            </div>
+                        </div>
+
+                        <!-- 備註輸入 -->
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 tracking-wider uppercase mb-1">現場觀察備註（選填）</label>
+                            <input type="text" id="pos-note" placeholder="例如：點牛肉麵、心情看似沉重、聊車..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-amber-500">
+                        </div>
+
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3 rounded-lg text-sm tracking-wider transition-colors mt-2">
+                            ✓ 送出並記錄本單
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 本地歷史紀錄數據庫 (跨 2 欄) -->
+                <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl xl:col-span-2 flex flex-col justify-between">
+                    <div>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                            <div>
+                                <h2 class="text-lg font-semibold text-zinc-100">歷史客資數據流</h2>
+                                <p class="text-xs text-zinc-400">本地獨立暫存（支援離線），下班前請點右側匯出檔案。</p>
+                            </div>
+                            <button onclick="exportCSV()" class="w-full sm:w-auto bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 text-xs px-4 py-2 rounded-lg transition-colors">
+                                📥 匯出 Excel (CSV)
+                            </button>
+                        </div>
+
+                        <!-- 歷史表格明細 -->
+                        <div class="overflow-x-auto border border-zinc-800 rounded-lg max-h-[500px] overflow-y-auto">
+                            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                                <thead class="bg-zinc-950 text-zinc-400 border-b border-zinc-800 font-mono uppercase tracking-wider text-[11px] sticky top-0">
+                                    <tr>
+                                        <th class="p-3">時間 (星期)</th>
+                                        <th class="p-3">門店</th>
+                                        <th class="p-3">估計年齡</th>
+                                        <th class="p-3">性別</th>
+                                        <th class="p-3">消費金額</th>
+                                        <th class="p-3">現場備註</th>
+                                        <th class="p-3 text-center">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="record-table-body" class="divide-y divide-zinc-800/60 text-zinc-300">
+                                    <!-- 動態插入紀錄 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-zinc-800 flex justify-between items-center text-xs text-zinc-500">
+                        <span>目前累計客資：<span id="record-count" class="text-amber-400 font-bold">0</span> 筆</span>
+                        <button onclick="clearAllRecords()" class="text-red-400 hover:underline">清除所有歷史資料</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 1. 分頁切換功能
+        function switchTab(tab) {
+            const simBtn = document.getElementById('tab-btn-sim');
+            const posBtn = document.getElementById('tab-btn-pos');
+            const simContent = document.getElementById('tab-content-sim');
+            const posContent = document.getElementById('tab-content-pos');
+
+            if (tab === 'sim') {
+                simBtn.className = "flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-md transition-all bg-amber-500 text-zinc-950";
+                posBtn.className = "flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-md transition-all text-zinc-400 hover:text-zinc-200";
+                simContent.classList.replace('hidden', 'block');
+                posContent.classList.replace('block', 'hidden');
+            } else {
+                posBtn.className = "flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-md transition-all bg-amber-500 text-zinc-950";
+                simBtn.className = "flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-md transition-all text-zinc-400 hover:text-zinc-200";
+                posContent.classList.replace('hidden', 'block');
+                simContent.classList.replace('block', 'hidden');
+            }
+        }
+
+        // 2. 模擬器對映表 (維持原邏輯)
+        const personaDatabase = {
+            "young_emotion_low": { tag: "The Subculture Connoisseur", name: "特定愛好重度沉浸愛好者 (年輕線)", reason: "渴望向懂行的高顏值店員分享自己的改裝機車或中古跳字錶收藏，在店內透過對話得到現實中稀缺的認同感，極度重視餐點作為深夜駐足的藉口。", keywords: "台北 復古氛圍酒吧、獨立樂團 深夜酒吧、黑膠 質感調酒、男模/女模 懂車 聊天", ad: "視覺：特寫精緻調酒與主廚精製宵夜，背景店員專注凝視男客手上的老派手錶，眼神發亮。文案：『你的小眾品味，這裡有人秒懂。來吃碗懂你的牛肉麵，聊聊你的故事。』" },
+            "young_emotion_high": { tag: "The Solitary High-Earner", name: "遠端高薪「數位游牧」自由業者", reason: "常年獨自在家接跨國高薪專案或代購，日常社交極度匱乏。精緻的餐點讓他們願意出門當作週五自我賞賜，男模女模的高情商對話能高效填補巨大的真人社交真空。", keywords: "Freelancer 孤獨 紓壓、適合一個人吃的高級餐廳、深夜質感聊天酒吧、台北頂級調酒隱藏菜單", ad: "視覺：第一人稱視角（POV）。精美深夜海鮮熱炒與微醺威士忌，對面坐著氣質驚艷、笑容溫暖的男女模遞上紙巾。文案：『關掉 Slack 闔上筆電。今晚不需要打字，我們聊聊真人的溫度。』" },
+            "mid_emotion_high": { tag: "The Asymmetric Networker", name: "高壓產業的「不對稱社交」高階主管", reason: "外商、科技新創創辦人或經理人，平日做決策壓力極大。在外面必須照顧下屬或客戶，只有在可以「用錢買斷」的高級 Talking bar，他們才能毫無負擔地單向索取情緒價值，不需要承擔後續任何人情社交利害關係。", keywords: "台北 隱密性高 宵夜推薦、個人包廂 酒吧 隱私、高階主管 紓壓 管道、經理人 一個人去酒吧", ad: "視覺：冷色調、極具 Brutalist 工業風的極簡高級包廂，桌上擺著頂級炙燒牛排，店員正貼心傾聽。文案：『白天的你為所有人做決定，今晚這裡沒人叫你長官。熱騰騰的私房菜與完全保密的耳朵，已為你準備好。』" },
+            "elder_privacy_low": { tag: "The Discreet Connoisseur", name: "老派實業隱密品味藏家", reason: "43歲以上的傳統實業家、自營商。極度挑剔店內威士忌酒款與老饕級私房餐點。帶朋友或獨自來此，看重的是男女模經理級的優雅應對、言之有物，以及絕對無法被外界窺探的頂級隱密包廂環境。", keywords: "台北 純預約制 私廚酒吧、老饕 深夜私房菜 招待所、頂級麥卡倫 專人服務、高隱私 招待所", ad: "視覺：奢華沉穩的皮革沙發，手工切鑿的冰塊配單一麥芽威士忌，主廚私房工夫菜。文案：『不喧嘩、不張揚。恰到好處的精緻對話，與專門款待挑剔味蕾的深夜私廚。#敬成熟的夜』" }
+        };
+
+        function updateSavvinessVal(val) {
+            document.getElementById('sim-savviness-val').innerText = `Level ${val}`;
+        }
+
+        function updatePersona() {
+            const age = document.getElementById('sim-age').value;
+            const drive = document.querySelector('input[name="sim-drive"]:checked').value;
+            const savviness = parseInt(document.getElementById('sim-savviness').value);
+            let savKey = savviness > 3 ? "high" : "low";
+            let data = personaDatabase[`${age}_${drive}_${savKey}`] || personaDatabase["mid_emotion_high"];
+            if (age === "elder") data = personaDatabase["elder_privacy_low"];
+            if (age === "young" && drive === "emotion" && savviness <= 3) data = personaDatabase["young_emotion_low"];
+            if (age === "young" && savviness > 3) data = personaDatabase["young_emotion_high"];
+
+            document.getElementById('p-tag').innerText = data.tag;
+            document.getElementById('p-name').innerText = data.name;
+            document.getElementById('p-reason').innerText = data.reason;
+            document.getElementById('p-keywords').innerText = data.keywords;
+            document.getElementById('p-ad').innerText = data.ad;
+        }
+
+        // 3. 現場結帳紀錄器變數
+        let currentSelectedStore = '';
+        let currentSelectedAge = '';
+        let currentSelectedGender = '';
+        let currentSelectedAmount = '';
+        let localRecords = [];
+
+        window.onload = function() {
+            updatePersona();
+            if (localStorage.getItem('talking_bar_records')) {
+                localRecords = JSON.parse(localStorage.getItem('talking_bar_records'));
+                renderTable();
+            }
+        };
+
+        // 快捷鍵選項選取視覺切換
+        function selectPosOpt(type, value) {
+            if (type === 'store') {
+                currentSelectedStore = value;
+                updateButtonStyles('.pos-store-btn', value);
+            } else if (type === 'age') {
+                currentSelectedAge = value;
+                updateButtonStyles('.pos-age-btn', value);
+            } else if (type === 'gender') {
+                currentSelectedGender = value;
+                updateButtonStyles('.pos-gender-btn', value);
+            } else if (type === 'amount') {
+                currentSelectedAmount = value;
+                updateButtonStyles('.pos-amount-btn', value);
+            }
+        }
+
+        function updateButtonStyles(className, value) {
+            const buttons = document.querySelectorAll(className);
+            buttons.forEach(btn => {
+                if (btn.innerText.includes(value)) {
+                    btn.className = `${className.replace('.','')} bg-amber-500 text-zinc-950 border border-amber-500 py-2.5 rounded-lg text-sm font-bold`;
+                    if(className === '.pos-gender-btn') btn.className = btn.className.replace('py-2.5', 'py-2');
+                    if(className === '.pos-amount-btn') btn.className = btn.className.replace('text-sm', 'text-xs') + (value === '20K 以上' ? ' col-span-2' : '');
+                } else {
+                    btn.className = `${className.replace('.','')} bg-zinc-950 border border-zinc-800 hover:border-zinc-700 py-2.5 rounded-lg text-sm text-zinc-300 font-medium`;
+                    if(className === '.pos-gender-btn') btn.className = btn.className.replace('py-2.5', 'py-2');
+                    if(className === '.pos-amount-btn') btn.className = btn.className.replace('text-sm', 'text-xs') + (btn.innerText === '20K 以上' ? ' col-span-2' : '');
+                }
+            });
+        }
+
+        // 儲存現場紀錄
+        function saveRecord(e) {
+            e.preventDefault();
+            if (!currentSelectedStore || !currentSelectedAge || !currentSelectedGender || !currentSelectedAmount) {
+                alert('請完整勾選：門店、年齡、性別、以及消費金額！');
+                return;
+            }
+
+            const noteInput = document.getElementById('pos-note');
+            const now = new Date();
+            
+            // 自動計算星期幾
+            const weekDays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
+            const currentDayOfWeek = weekDays[now.getDay()];
+
+            const timeString = now.toLocaleTimeString('zh-TW', { hour12: false, hour: '2-digit', minute: '2-digit' });
+            const dateString = now.toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit' });
+            
+            // 組合時間顯示字串
+            const fullTimeStr = `${dateString} ${timeString} (${currentDayOfWeek})`;
+
+            const newRecord = {
+                id: Date.now(),
+                time: fullTimeStr,
+                weekday: currentDayOfWeek,
+                store: currentSelectedStore,
+                age: currentSelectedAge,
+                gender: currentSelectedGender,
+                amount: currentSelectedAmount,
+                note: noteInput.value.trim() || '無備註'
+            };
+
+            localRecords.unshift(newRecord);
+            localStorage.setItem('talking_bar_records', JSON.stringify(localRecords));
+            
+            // 表單與按鈕重置
+            noteInput.value = '';
+            currentSelectedStore = ''; currentSelectedAge = ''; currentSelectedGender = ''; currentSelectedAmount = '';
+            
+            document.querySelectorAll('.pos-store-btn, .pos-age-btn, .pos-gender-btn, .pos-amount-btn').forEach(btn => {
+                let baseClass = btn.classList.contains('pos-amount-btn') ? 'text-xs' : 'text-sm';
+                let colSpan = btn.innerText === '20K 以上' ? ' col-span-2' : '';
+                let py = btn.classList.contains('pos-gender-btn') ? 'py-2' : 'py-2.5';
+                btn.className = `${btn.classList[0]} bg-zinc-950 border border-zinc-800 hover:border-zinc-700 ${py} rounded-lg ${baseClass} text-zinc-300 font-medium${colSpan}`;
+            });
+
+            renderTable();
+        }
+
+        // 渲染資料表格
+        function renderTable() {
+            const tbody = document.getElementById('record-table-body');
+            const countSpan = document.getElementById('record-count');
+            tbody.innerHTML = '';
+            countSpan.innerText = localRecords.length;
+
+            if (localRecords.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-zinc-500 italic">暫無任何現場客資紀錄。</td></tr>`;
+                return;
+            }
+
+            localRecords.forEach((rec) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-zinc-900/40 transition-colors";
+                
+                // 依門店給不同標籤底色
+                const storeBadge = rec.store === 'Club One' 
+                    ? '<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded font-bold">Club One</span>'
+                    : '<span class="bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 rounded font-bold">1884</span>';
+
+                tr.innerHTML = `
+                    <td class="p-3 font-mono text-zinc-400">${rec.time}</td>
+                    <td class="p-3">${storeBadge}</td>
+                    <td class="p-3"><span class="bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${rec.age} 歲</span></td>
+                    <td class="p-3 text-zinc-200">${rec.gender}</td>
+                    <td class="p-3 font-mono text-amber-400 font-semibold">${rec.amount}</td>
+                    <td class="p-3 text-zinc-400 truncate max-w-[150px] sm:max-w-none" title="${rec.note}">${rec.note}</td>
+                    <td class="p-3 text-center"><button onclick="deleteRecord(${rec.id})" class="text-zinc-600 hover:text-red-400 transition-colors px-2 py-1">✕</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function deleteRecord(id) {
+            if (confirm('確定要刪除此筆客資紀錄嗎？')) {
+                localRecords = localRecords.filter(r => r.id !== id);
+                localStorage.setItem('talking_bar_records', JSON.stringify(localRecords));
+                renderTable();
+            }
+        }
+
+        function clearAllRecords() {
+            if (confirm('⚠️ 注意：這將會永久清空本地儲存的所有現場客資紀錄，確定執行？')) {
+                localRecords = [];
+                localStorage.removeItem('talking_bar_records');
+                renderTable();
+            }
+        }
+
+        // 匯出 CSV (處理 Excel 格式與逗號安全)
+        function exportCSV() {
+            if (localRecords.length === 0) {
+                alert('目前沒有資料可以匯出！');
+                return;
+            }
+            
+            // 加上 BOM (\uFEFF) 防止 Excel 打開中文變亂碼
+            let csvContent = "\uFEFF時間,星期,門店,預估年齡範圍,性別,消費金額區間,現場備註\n";
+            
+            localRecords.forEach(r => {
+                let safeNote = r.note.replace(/"/g, '""');
+                csvContent += `"${r.time}",${r.weekday},${r.store},"${r.age} 歲",${r.gender},"${r.amount}","${safeNote}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0,10);
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", `TalkingBar_客資明細_${dateStr}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
